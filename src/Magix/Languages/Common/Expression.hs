@@ -12,13 +12,29 @@
 module Magix.Languages.Common.Expression
   ( Replacement,
     getCommonReplacements,
+    packageToExpression
   )
 where
 
-import Data.Text (Text, pack)
+import Data.Text (Text, pack, breakOn)
+import qualified Data.Text as Text
 import Magix.Config (Config (..))
 
+type FlakeRef = (Text, Text)
 type Replacement = (Text, Text)
+
+isFlakeReference :: Text -> Maybe FlakeRef
+isFlakeReference pn | Text.any (\c -> '#' == c || ':' == c || '/' == c || '\\' == c) pn = -- package names don't contain these symbols but flake references do
+                      let (flakePath, packageRef) = breakOn "#" pn
+                      in pure $ (flakePath, if Text.null packageRef then pack "default" else Text.dropWhile ('#' ==) packageRef)
+                    | otherwise = -- not a flake reference
+                      Nothing
+
+flakeExpr :: FlakeRef -> Text
+flakeExpr (p, pn) = pack "(builtins.getFlake \"" <> p <> pack "\").packages.${builtins.currentSystem}." <> pn
+
+packageToExpression :: Text -> Text
+packageToExpression pn = maybe pn flakeExpr $ isFlakeReference pn
 
 getCommonReplacements :: Config -> [Replacement]
 getCommonReplacements c =

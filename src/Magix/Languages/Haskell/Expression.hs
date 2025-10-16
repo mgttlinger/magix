@@ -15,12 +15,12 @@ module Magix.Languages.Haskell.Expression
 where
 
 import Data.Text (unwords)
-import Magix.Languages.Common.Expression (Replacement)
+import Magix.Languages.Common.Expression (Replacement, packageToExpression)
 import Magix.Languages.Haskell.Directives (HaskellDirectives (..))
 import Prelude hiding (readFile, unwords)
 
 getHaskellReplacements :: HaskellDirectives -> [Replacement]
 getHaskellReplacements (HaskellDirectives ps fs) =
-  [ ("__HASKELL_PACKAGES__", unwords ps),
+  [ ("__HASKELL_PACKAGES__", unwords $ packageToExpression <$> ps),
     ("__GHC_FLAGS__", unwords fs)
   ]
