@@ -49,7 +49,7 @@ getBuildDir :: FilePath -> ByteString -> String -> FilePath
 getBuildDir cacheDir hash name = getCommonPrefix cacheDir hash name <> "-build"
 
 getBuildExprPath :: FilePath -> FilePath
-getBuildExprPath buildDir = buildDir </> "default.nix"
+getBuildExprPath buildDir = buildDir </> "flake.nix"
 
 getResultLinkPath :: FilePath -> ByteString -> String -> FilePath
 getResultLinkPath cacheDir hash name = getCommonPrefix cacheDir hash name <> "-result"

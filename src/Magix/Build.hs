@@ -79,8 +79,8 @@ build logger cfg expr = do
   logD "Building with nix-build"
   (exitCode, stdOut, stdErr) <-
     readProcessWithExitCode
-      "nix-build"
-      ["--out-link", cfg.resultLinkPath, cfg.buildDir]
+      "nix"
+      ["build", "--impure", "--out-link", cfg.resultLinkPath, cfg.buildDir]
       ""
   let success = exitCode == ExitSuccess
       logFun = if success then logD else logE

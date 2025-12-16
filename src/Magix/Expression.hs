@@ -28,7 +28,7 @@ import Paths_magix (getDataFileName)
 import Prelude hiding (readFile)
 
 getTemplatePath :: Language -> FilePath
-getTemplatePath language = "src/Magix/Languages/" <> show language <> "/Template.nix"
+getTemplatePath language = "src/Magix/Languages/" <> show language <> "/FTemplate.nix"
 
 getTemplate :: Language -> IO Text
 getTemplate language = getDataFileName (getTemplatePath language) >>= readFile

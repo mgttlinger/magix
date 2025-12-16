@@ -1,16 +1,19 @@
 {
-  pkgs ? import <nixpkgs> { },
+  pkgs ? import <nixpkgs> { }
 }:
-
-pkgs.stdenv.mkDerivation {
+let
+  overlay = self: super: { haskellPackages = super.haskellPackages.override { overrides = sself: ssuper: { __OVERRIDES__ }; }; };
+  magixpkgs = pkgs.extend overlay;
+in
+magixpkgs.stdenv.mkDerivation {
   name = "__SCRIPT_NAME__";
 
   src = builtins.path { path = __SCRIPT_SOURCE__; };
   dontUnpack = true;
 
-  nativeBuildInputs = with pkgs; [ makeWrapper ];
+  nativeBuildInputs = with magixpkgs; [ makeWrapper ];
 
-  buildInputs = with pkgs; [
+  buildInputs = with magixpkgs; [
     (haskellPackages.ghcWithPackages (ps: with ps; [ __HASKELL_PACKAGES__ ]))
   ];
 

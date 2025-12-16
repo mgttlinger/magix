@@ -25,6 +25,9 @@ data-files:
   src/Magix/Languages/Bash/Template.nix
   src/Magix/Languages/Haskell/Template.nix
   src/Magix/Languages/Python/Template.nix
+  src/Magix/Languages/Bash/FTemplate.nix
+  src/Magix/Languages/Haskell/FTemplate.nix
+  src/Magix/Languages/Python/FTemplate.nix
 
 source-repository head
   location: https://github.com/dschrempf/magix

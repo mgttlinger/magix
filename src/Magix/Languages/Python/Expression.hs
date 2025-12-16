@@ -15,9 +15,16 @@ module Magix.Languages.Python.Expression
 where
 
 import Data.Text (unwords)
-import Magix.Languages.Common.Expression (Replacement, packageToExpression)
+import Magix.Languages.Common.Expression 
 import Magix.Languages.Python.Directives (PythonDirectives (..))
 import Prelude hiding (unwords)
 
+--python3FlakeExpr :: FlakeRef -> Text
+--python3FlakeExpr (p, pn) = pack "((builtins.getFlake \"" <> p <> pack "\").outputs.packages.${builtins.currentSystem} { python3 = super.python3; })." <> fromMaybe "default" pn
+
 getPythonReplacements :: PythonDirectives -> [Replacement]
-getPythonReplacements (PythonDirectives ps) = [("__PYTHON_PACKAGES__", unwords $ packageToExpression <$> ps)]
+getPythonReplacements (PythonDirectives ps) =
+  let (packs, overs) = partitionFlakes ps in
+  [ ("__PYTHON_PACKAGES__", unwords packs),
+    ("__OVERRIDES__", overrides $ flakeOverride <$> overs)
+  ]

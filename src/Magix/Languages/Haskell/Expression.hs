@@ -14,13 +14,19 @@ module Magix.Languages.Haskell.Expression
   )
 where
 
-import Data.Text (unwords)
-import Magix.Languages.Common.Expression (Replacement, packageToExpression)
+import Data.Text (unwords, unlines)
+import Magix.Languages.Common.Expression 
 import Magix.Languages.Haskell.Directives (HaskellDirectives (..))
-import Prelude hiding (readFile, unwords)
+import Prelude hiding (readFile, unwords, unlines)
+
+--haskellFlakeExpr :: FlakeRef -> Text
+--haskellFlakeExpr (p, pn) = pack "(builtins.getFlake \"" <> p <> pack "\").packages.${builtins.currentSystem}." <> fromMaybe "default" pn
 
 getHaskellReplacements :: HaskellDirectives -> [Replacement]
 getHaskellReplacements (HaskellDirectives ps fs) =
-  [ ("__HASKELL_PACKAGES__", unwords $ packageToExpression <$> ps),
+  let (packs, flakes) = partitionFlakes ps in
+  [ ("__HASKELL_PACKAGES__", unwords $ packs <> (fst . flakeOverride <$> flakes)),
+    ("__FLAKES__", unlines $ flakeInput <$> flakes),
+    ("__OVERRIDES__", overrides $ flakeOverride <$> flakes),
     ("__GHC_FLAGS__", unwords fs)
   ]
